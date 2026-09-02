@@ -63,8 +63,10 @@ jobs:
               with:
                   path: .vscode-test
                   key: vscode-${{ runner.os }}-stable-${{ hashFiles('.vscode-test.mjs', 'package.json') }}
-                  restore-keys: |
-                      vscode-${{ runner.os }}-stable-
+                  # No restore-keys: `.vscode-test.mjs` pins `version: "stable"`, a moving target, so a
+                  # prefix-matched cache from an earlier VS Code release satisfies the key while lacking
+                  # the build the harness now wants -> `_electron.launch ... ENOENT`. Any PR editing
+                  # `package.json` changes the key and hit that fallback. A miss must mean a clean download.
 
             # Cache Playwright browsers
             - name: Cache Playwright browsers
